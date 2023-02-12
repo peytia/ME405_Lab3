@@ -5,7 +5,7 @@ import utime
 import pyb
 
 """!
-    @file                       main_2.py
+    @file                       Lab2main.py
     @brief                      Functions as a main file to run and test code
     @details                    This file will be flashed to the Pyboard and used to run the controller, running
                                 closed-loop step response tests.
