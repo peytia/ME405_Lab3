@@ -68,7 +68,6 @@ class Task:
       @endcode
       """
 
-
     def __init__(self, run_fun, name="NoName", priority=0, period=None,
                  profile=False, trace=False, shares=()):
         """!
@@ -101,14 +100,14 @@ class Task:
         else:
             self._run_gen = run_fun()
 
-        ## The name of the task, hopefully a short and descriptive string.
+        # The name of the task, hopefully a short and descriptive string.
         self.name = name
 
-        ## The task's priority, an integer with higher numbers meaning higher 
+        # The task's priority, an integer with higher numbers meaning higher
         #  priority. 
         self.priority = int(priority)
 
-        ## The period, in milliseconds, between runs of the task's @c run()
+        # The period, in milliseconds, between runs of the task's @c run()
         #  method. If the period is @c None, the @c run() method won't be run
         #  on a time basis but will instead be run by the scheduler as soon
         #  as feasible after code such as an interrupt handler calls the 
@@ -135,10 +134,9 @@ class Task:
         self._tr_data = []
         self._prev_time = utime.ticks_us()
 
-        ## Flag which is set true when the task is ready to be run by the
+        # Flag which is set true when the task is ready to be run by the
         #  scheduler
         self.go_flag = False
-
 
     def schedule(self) -> bool:
         """!
@@ -195,7 +193,6 @@ class Task:
         else:
             return False
 
-
     @micropython.native
     def ready(self) -> bool:
         """!
@@ -223,7 +220,6 @@ class Task:
         # If the task doesn't use a timer, we rely on go_flag to signal ready
         return self.go_flag
 
-
     def set_period(self, new_period):
         """!
         This method sets the period between runs of the task to the given
@@ -236,7 +232,6 @@ class Task:
         else:
             self.period = int(new_period) * 1000
 
-
     def reset_profile(self):
         """!
         This method resets the variables used for execution time profiling.
@@ -247,7 +242,6 @@ class Task:
         self._slowest = 0
         self._late_sum = 0
         self._latest = 0
-
 
     def get_trace(self):
         """!
@@ -270,7 +264,6 @@ class Task:
             tr_str += ' not traced'
         return tr_str
 
-
     def go(self):
         """!
         Method to set a flag so that this task indicates that it's ready to run.
@@ -278,7 +271,6 @@ class Task:
         another task which has data that this task needs to process soon.
         """
         self.go_flag = True
-
 
     def __repr__(self):
         """!
@@ -324,12 +316,11 @@ class TaskList:
         Initialize the task list. This creates the list of priorities in
         which tasks will be organized by priority.
         """
-        ## The list of priority lists. Each priority for which at least one 
+        # The list of priority lists. Each priority for which at least one
         #  task has been created has a list whose first element is a task 
         #  priority and whose other elements are references to task objects at
         #  that priority. 
         self.pri_list = []
-
 
     def append(self, task):
         """!
@@ -357,7 +348,6 @@ class TaskList:
         # Make sure the main list (of lists at each priority) is sorted
         self.pri_list.sort(key=lambda pri: pri[0], reverse=True)
 
-
     @micropython.native
     def rr_sched(self):
         """!
@@ -375,7 +365,6 @@ class TaskList:
         for pri in self.pri_list:
             for task in pri[2:]:
                 task.schedule()
-
 
     @micropython.native
     def pri_sched(self):
@@ -402,7 +391,6 @@ class TaskList:
                 if ran:
                     return
 
-
     def __repr__(self):
         """!
         Create some diagnostic text showing the tasks in the task list.
@@ -416,10 +404,8 @@ class TaskList:
         return ret_str
 
 
-## This is @b the main task list which is created for scheduling when 
+# This is @b the main task list which is created for scheduling when
 #  @c cotask.py is imported into a program. 
 task_list = TaskList()
-
-
 
 
