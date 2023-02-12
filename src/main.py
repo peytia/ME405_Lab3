@@ -1,113 +1,92 @@
-import motor_driver
-import encoder_reader
-import motor_controller
-import utime
-import pyb
-
 """!
-    @file                       main.py
-    @brief                      Functions as a main file to run and test code
-    @details                    This file will be flashed to the Pyboard and used to run the controller, running
-                                closed-loop step response tests.
-                                
-    @author                     Peyton Archibald
-    @author                     Harrison Hirsch
-    @date                       February 7, 2023
+@file main.py
+    This file contains a demonstration program that runs some tasks, an
+    inter-task shared variable, and a queue. The tasks don't really @b do
+    anything; the example just shows how these elements are created and run.
+
+@author JR Ridgely
+@date   2021-Dec-15 JRR Created from the remains of previous example
+@copyright (c) 2015-2021 by JR Ridgely and released under the GNU
+    Public License, Version 2. 
 """
 
+import gc
+import pyb
+import cotask
+import task_share
 
-def main():
+
+def task1_fun(shares):
     """!
-        @brief                  Method that will be run when the Pyboard is flashed
-        @details                This file will be flashed to the Pyboard and used to run the controller, running
-                                closed-loop step response tests.
+    Task which puts things into a share and a queue.
+    @param shares A list holding the share and queue used by this task
     """
-    # periodic_step_test()            # Rotate one revolution and stop
-    step_response_test()            # Run a step response, store the results, and plot the step response
+    # Get references to the share and queue which have been passed to this task
+    my_share, my_queue = shares
+
+    counter = 0
+    while True:
+        my_share.put(counter)
+        my_queue.put(counter)
+        counter += 1
+
+        yield 0
 
 
-def periodic_step_test():
+def task2_fun(shares):
     """!
-        @brief                  Rotate the motor one revolution and stop
-        @details                Runs the controller, running closed-loop step response tests in which the setpoint is
-                                changed to rotate the motor by one revolution and stop at the final position every 3
-                                seconds.
+    Task which takes things out of a queue and share and displays them.
+    @param shares A tuple of a share and queue from which this task gets data
     """
-    motor1 = motor_driver.MotorDriver('A10', 'B4', 'B5', 3)  # Set up motor 1
-    encoder1 = encoder_reader.EncoderReader('C6', 'C7', 8)  # Set up encoder 1
-    setpt = 16348
-    controller1 = motor_controller.MotorController(.01, setpt)  # Set up controller 1
-    startTime = utime.ticks_ms()        # Begin start time counter
-    currTime = 0                        # Allocate memory for current time
+    # Get references to the share and queue which have been passed to this task
+    the_share, the_queue = shares
+
+    while True:
+        # Show everything currently in the queue and the value in the share
+        print(f"Share: {the_share.get ()}, Queue: ", end='')
+        while q0.any():
+            print(f"{the_queue.get ()} ", end='')
+        print('')
+
+        yield 0
+
+
+# This code creates a share, a queue, and two tasks, then starts the tasks. The
+# tasks run until somebody presses ENTER, at which time the scheduler stops and
+# printouts show diagnostic information about the tasks, share, and queue.
+if __name__ == "__main__":
+    print("Testing ME405 stuff in cotask.py and task_share.py\r\n"
+          "Press Ctrl-C to stop and show diagnostics.")
+
+    # Create a share and a queue to test function and diagnostic printouts
+    share0 = task_share.Share('h', thread_protect=False, name="Share 0")
+    q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
+                          name="Queue 0")
+
+    # Create the tasks. If trace is enabled for any task, memory will be
+    # allocated for state transition tracing, and the application will run out
+    # of memory after a while and quit. Therefore, use tracing only for 
+    # debugging and set trace to False when it's not needed
+    task1 = cotask.Task(task1_fun, name="Task_1", priority=1, period=400,
+                        profile=True, trace=False, shares=(share0, q0))
+    task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
+                        profile=True, trace=False, shares=(share0, q0))
+    cotask.task_list.append(task1)
+    cotask.task_list.append(task2)
+
+    # Run the memory garbage collector to ensure memory is as defragmented as
+    # possible before the real-time scheduler is started
+    gc.collect()
+
+    # Run the scheduler with the chosen scheduling algorithm. Quit if ^C pressed
     while True:
         try:
-            if currTime >= 3000:        # Once the current time reaches 3 seconds
-                startTime = utime.ticks_ms()        # Restart start time counter
-                setpt += 16348                      # Add one revolution to the setpoint
-                controller1.set_setpoint(setpt)     # Set controller setpoint
-            encoderPosSpeed = encoder1.read()       # Read current motor position
-            desiredDuty = controller1.run(encoderPosSpeed[0])   # Run controller with current position
-            motor1.set_duty_cycle(desiredDuty)      # Set motor duty cycle
-            utime.sleep_ms(10)                      # Match rate of execution
-            stopTime = utime.ticks_ms()             # Begin stop time counter
-            currTime = utime.ticks_diff(stopTime, startTime)    # Calculate current time
+            cotask.task_list.pri_sched()
         except KeyboardInterrupt:
-            break       # Stop motor on KeyboardInterrupt
-    motor1.set_duty_cycle(0)
+            break
 
-
-def step_response_test():
-    """!
-        @brief                  Run and record a step response test
-        @details                Runs the controller, running closed-loop a step response test. The time and
-                                corresponding motor position is stored in a list and written to a serial port to be
-                                graphed
-    """
-    while True:
-        motor1 = motor_driver.MotorDriver('A10', 'B4', 'B5', 3)  # Set up motor 1
-        encoder1 = encoder_reader.EncoderReader('C6', 'C7', 8)  # Set up encoder 1
-        setpt = 16348
-        Kp_input = input('Enter a Kp: ')        # Prompt user to enter a proportional gain
-        if is_number(Kp_input):             # Test for valid input
-            Kp_input = float(Kp_input)
-        else:
-            raise ValueError('Input must be a number')
-        controller1 = motor_controller.MotorController(Kp_input, setpt)  # Set up controller 1
-        u2 = pyb.UART(2, baudrate=115200)   # Set up the second USB-serial port
-        startTime = utime.ticks_ms()        # Begin start time counter
-        currTime = 0                        # Allocate memory for current time
-        initial_val_lst = 100 * [0]         # 1 second before step
-        final_value_lst = 500 * [24000]     # 5 seconds of about 1.5 revolutions
-        step_lst = initial_val_lst + final_value_lst    # Concatenate lists to make step response positions
-        storedData = []                     # Allocate memory for stored data
-        for value in step_lst:              # For each position in step response
-            encoderPosSpeed = encoder1.read()   # Update and read encoder value
-            controller1.set_setpoint(value)     # Set controller setpoint to current step response value
-            desiredDuty = controller1.run(encoderPosSpeed[0])   # Run controller to calculate duty cycle
-            motor1.set_duty_cycle(desiredDuty)  # Set calculated duty cycle
-            stopTime = utime.ticks_ms()         # Begin stop time counter
-            currTime = utime.ticks_diff(stopTime, startTime)    # Calculate current time
-            currPos = encoderPosSpeed[0]        # Current encoder position
-            controller1.store_data(storedData, currTime, currPos)   # Store motor position in a data list
-            utime.sleep_ms(10)                  # Match rate of execution
-        for dataPt in storedData:               # Write stored data to serial port
-            u2.write(f'{dataPt[0]}, {dataPt[1]}\r\n')
-
-
-def is_number(pt):
-    """!
-        @brief          Helper function to test for valid user input
-        @details        This is a helper function to determine if the user input a valid value for Kp. A valid Kp is a
-                        floating point number.
-        @param  pt      The input to be tested
-        @return         A boolean True if the input can be cast to a float, and False otherwise.
-    """
-    try:
-        float(pt)       # Return true if able to cast to a float
-        return True
-    except ValueError:
-        return False    # Return false if not
-
-
-if __name__ == '__main__':
-    main()
+    # Print a table of task data and a table of shared information data
+    print('\n' + str(cotask.task_list))
+    print(task_share.show_all())
+    print(task1.get_trace())
+    print('')
