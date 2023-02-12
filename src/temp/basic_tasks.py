@@ -16,6 +16,7 @@ import cotask
 import task_share
 
 
+
 def task1_fun(shares):
     """!
     Task which puts things into a share and a queue.
