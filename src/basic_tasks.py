@@ -11,7 +11,7 @@
 """
 
 import gc
-import pyb
+# import pyb
 import cotask
 import task_share
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
             break
 
     # Print a table of task data and a table of shared information data
-    print('\n' + str (cotask.task_list))
+    print('\n' + str(cotask.task_list))
     print(task_share.show_all())
     print(task1.get_trace())
     print('')
