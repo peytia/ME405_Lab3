@@ -25,7 +25,7 @@ class MotorTask:
     @details                    This is a class that implements
     """
 
-    def __init__(self, motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
+    def __init__(self,setpoint_share motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
         """!
             @brief                      Constructs a controller object
             @details                    Upon instantiation, the controller object has a defined proportional gain and
@@ -41,9 +41,10 @@ class MotorTask:
 
     def update(self):
         self.encoder_position = self.encoder.read()
-        self.motor_setpoint = self.controller.run(self.encoder_position[0])
-        print(self.encoder_position[0],self.motor_setpoint)
-        self.motor.set_duty_cycle(self.motor_setpoint)
+        self.controller.set_setpoint(setpoint_share)
+        self.motor_desiredduty = self.controller.run(self.encoder_position[0])
+        print(self.encoder_position[0],self.motor_desiredduty)
+        self.motor.set_duty_cycle(self.motor_desiredduty)
 
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and

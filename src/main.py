@@ -52,10 +52,10 @@ def task2_fun(shares):
         yield 0
 
 
-def task1_motor():
-
+def task1_motor(shares):
+    setpoint_share = shares
     Kp = float(input('Enter a Kp: '))
-    motor1 = motor_task.MotorTask('A10', 'B4', 'B5', 3, 'C6', 'C7', 8, Kp)
+    motor1 = motor_task.MotorTask(setpoint_share,'A10', 'B4', 'B5', 3, 'C6', 'C7', 8, Kp)
     yield 0
     while True:
         motor1.update()
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     #       "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
-    share0 = task_share.Share('h', thread_protect=False, name="Share 0")
+    setpoint_share = task_share.Share('h', thread_protect=False, name="Share 0")
     q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
                           name="Queue 0")
 
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # of memory after a while and quit. Therefore, use tracing only for
     # debugging and set trace to False when it's not needed
     motor_task1 = cotask.Task(task1_motor, name="Task_1", priority=1, period=10,
-                              profile=False, trace=False)
+                              profile=False, trace=False, shares=(setpoint_share))
     # # task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
     # #                     profile=True, trace=False, shares=(share0, q0))
     cotask.task_list.append(motor_task1)
