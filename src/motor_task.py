@@ -25,7 +25,7 @@ class MotorTask:
     @details                    This is a class that implements
     """
 
-    def __init__(self,setpoint_share, motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
+    def __init__(self,shares , motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
         """!
             @brief                      Constructs a controller object
             @details                    Upon instantiation, the controller object has a defined proportional gain and
@@ -33,15 +33,16 @@ class MotorTask:
             @param  initial_Kp          The proportional gain to be used
             @param  initial_set_point   The initial setpoint to aim for
         """
-
+        self.setpoint_share = shares
         self.motor = motor_driver.MotorDriver(motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer)
         self.encoder = encoder_reader.EncoderReader(encoder_pinA, encoder_pinB, encoder_timer)
         self.controller = motor_controller.MotorController(Kp, 0)
         print("Created a motor motor-encoder object")
 
     def update(self):
+
         self.encoder_position = self.encoder.read()
-        self.controller.set_setpoint(setpoint_share)
+        self.controller.set_setpoint(self.setpoint_share.get())
         self.motor_desiredduty = self.controller.run(self.encoder_position[0])
         print(self.encoder_position[0],self.motor_desiredduty)
         self.motor.set_duty_cycle(self.motor_desiredduty)

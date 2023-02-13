@@ -53,9 +53,8 @@ def task2_fun(shares):
 
 
 def task1_motor(shares):
-    setpoint_share = shares
     Kp = float(input('Enter a Kp: '))
-    motor1 = motor_task.MotorTask(setpoint_share,'A10', 'B4', 'B5', 3, 'C6', 'C7', 8, Kp)
+    motor1 = motor_task.MotorTask(shares,'A10', 'B4', 'B5', 3, 'C6', 'C7', 8, Kp)
     yield 0
     while True:
         motor1.update()
