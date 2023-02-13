@@ -6,7 +6,7 @@
 
 @author Peyton Archibald
 @author Harrison Hirsch
-@date   2021-Dec-15 JRR Created from the remains of previous example
+@date   2021-Dec-15
 
 """
 
@@ -45,7 +45,5 @@ class MotorTask:
         self.motor_setpoint = self.controller.run(self.encoder_position[0])
         self.motor.set_duty_cycle(self.motor_setpoint)
 
-# This code creates a share, a queue, and two tasks, then starts the tasks. The
-# tasks run until somebody presses ENTER, at which time the scheduler stops and
-# printouts show diagnostic information about the tasks, share, and queue.
+
 if __name__ == "__main__":
