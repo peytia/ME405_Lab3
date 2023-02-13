@@ -101,7 +101,7 @@ class Queue (BaseShare):
     something = my_queue.get ()
     @endcode
     """
-    ## A counter used to give serial numbers to queues for diagnostic use.
+    # A counter used to give serial numbers to queues for diagnostic use.
     ser_num = 0
 
     def __init__ (self, type_code, size, thread_protect = False, 
@@ -210,11 +210,11 @@ class Queue (BaseShare):
 
         # Re-enable interrupts
         if self._thread_protect and not in_ISR:
-            pyb.enable_irq (_irq_state)
+            pyb.enable_irq(_irq_state)
 
 
     @micropython.native
-    def get (self, in_ISR = False):
+    def get(self, in_ISR = False):
         """!
         Read an item from the queue.
 
