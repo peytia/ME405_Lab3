@@ -25,7 +25,7 @@ class MotorTask:
     @details                    This is a class that implements
     """
 
-    def __init__(self, motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer):
+    def __init__(self, motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
         """!
             @brief                      Constructs a controller object
             @details                    Upon instantiation, the controller object has a defined proportional gain and
@@ -36,12 +36,13 @@ class MotorTask:
 
         self.motor = motor_driver.MotorDriver(motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer)
         self.encoder = encoder_reader.EncoderReader(encoder_pinA, encoder_pinB, encoder_timer)
-        self.controller = motor_controller.MotorController(0.01, 0)
+        self.controller = motor_controller.MotorController(Kp, 0)
         print("Created a motor motor-encoder object")
 
     def update(self):
         self.encoder_position = self.encoder.read()
         self.motor_setpoint = self.controller.run(self.encoder_position[0])
+        print(self.encoder_position[0],self.motor_setpoint)
         self.motor.set_duty_cycle(self.motor_setpoint)
 
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
