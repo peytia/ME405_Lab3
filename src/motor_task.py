@@ -19,7 +19,6 @@ import motor_controller
 import motor_driver
 
 
-
 class MotorTask:
     """!
     @brief                      A class for
@@ -48,4 +47,7 @@ class MotorTask:
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
 # printouts show diagnostic information about the tasks, share, and queue.
+
+
 if __name__ == "__main__":
+    pass

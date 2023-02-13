@@ -28,27 +28,27 @@ import pyb
 import micropython
 
 
-## This is a system-wide list of all the queues and shared variables. It is
+# This is a system-wide list of all the queues and shared variables. It is
 #  used to create diagnostic printouts. 
 share_list = []
 
-## This dictionary allows readable printouts of queue and share data types.
-type_code_strings = {'b' : "int8",   'B' : "uint8",
-                     'h' : "int16",  'H' : "uint16",
-                     'i' : "int(?)", 'I' : "uint(?)",
-                     'l' : "int32",  'L' : "uint32",
-                     'q' : "int64",  'Q' : "uint64",
-                     'f' : "float",  'd' : "double"}
+# This dictionary allows readable printouts of queue and share data types.
+type_code_strings = {'b': "int8",   'B': "uint8",
+                     'h': "int16",  'H': "uint16",
+                     'i': "int(?)", 'I': "uint(?)",
+                     'l': "int32",  'L': "uint32",
+                     'q': "int64",  'Q': "uint64",
+                     'f': "float",  'd': "double"}
 
 
-def show_all ():
+def show_all():
     """!
     Create a string holding a diagnostic printout showing the status of
     each queue and share in the system. 
     @return A string containing information about each queue and share
     """
-    gen = (str (item) for item in share_list)
-    return '\n'.join (gen)
+    gen = (str(item) for item in share_list)
+    return '\n'.join(gen)
 
 
 # ============================================================================
@@ -62,7 +62,7 @@ class BaseShare:
     classes @c Queue and @c Share. 
     """
 
-    def __init__ (self, type_code, thread_protect = True, name = None):
+    def __init__(self, type_code, thread_protect=True, name=None):
         """!
         Create a base queue object when called by a child class initializer.
 
@@ -154,12 +154,11 @@ class Queue (BaseShare):
             raise
 
         # Initialize pointers to be used for reading and writing data
-        self.clear ()
+        self.clear()
 
         # Since we may have allocated a bunch of memory, call the garbage
         # collector to neaten up what memory is left for future use
-        gc.collect ()
-
+        gc.collect()
 
     @micropython.native
     def put (self, item, in_ISR = False):
@@ -355,11 +354,10 @@ class Share (BaseShare):
     something = my_share.get ()
     @endcode
     """
-    ## A counter used to give serial numbers to shares for diagnostic use.
+    # A counter used to give serial numbers to shares for diagnostic use.
     ser_num = 0
 
-
-    def __init__ (self, type_code, thread_protect = True, name = None):
+    def __init__(self, type_code, thread_protect=True, name=None):
         """!
         Create a shared data item used to transfer data between tasks.
 
@@ -384,17 +382,16 @@ class Share (BaseShare):
                is a serial number for the share
         """
         # First call the parent class initializer
-        super ().__init__ (type_code, thread_protect, name)
+        super().__init__(type_code, thread_protect, name)
 
-        self._buffer = array.array (type_code, [0])
+        self._buffer = array.array(type_code, [0])
 
-        self._name = str (name) if name != None \
-            else 'Share' + str (Share.ser_num)
+        self._name = str(name) if name != None \
+            else 'Share' + str(Share.ser_num)
         Share.ser_num += 1
 
-
     @micropython.native
-    def put (self, data, in_ISR = False):
+    def put (self, data, in_ISR=False):
         """!
         Write an item of data into the share.
 
@@ -408,17 +405,16 @@ class Share (BaseShare):
 
         # Disable interrupts before writing the data
         if self._thread_protect and not in_ISR:
-            irq_state = pyb.disable_irq ()
+            irq_state = pyb.disable_irq()
 
         self._buffer[0] = data
 
         # Re-enable interrupts
         if self._thread_protect and not in_ISR:
-            pyb.enable_irq (irq_state)
-
+            pyb.enable_irq(irq_state)
 
     @micropython.native
-    def get (self, in_ISR = False):
+    def get (self, in_ISR=False):
         """!
         Read an item of data from the share.
 
@@ -435,10 +431,9 @@ class Share (BaseShare):
 
         # Re-enable interrupts
         if self._thread_protect and not in_ISR:
-            pyb.enable_irq (irq_state)
+            pyb.enable_irq(irq_state)
 
-        return (to_return)
-
+        return to_return
 
     def __repr__ (self):
         """!

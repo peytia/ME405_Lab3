@@ -14,6 +14,7 @@ import gc
 import pyb
 import cotask
 import task_share
+import motor_task
 
 
 def task1_fun(shares):
@@ -51,12 +52,20 @@ def task2_fun(shares):
         yield 0
 
 
+def task1_controller():
+    motor1 = motor_task.MotorTask('A10', 'B4', 'B5', 3, 'C6', 'C7', 8)
+    yield 0
+    while True:
+        motor1.update()
+        yield 0
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
 # printouts show diagnostic information about the tasks, share, and queue.
+
+
 if __name__ == "__main__":
-    print("Testing ME405 stuff in cotask.py and task_share.py\r\n"
-          "Press Ctrl-C to stop and show diagnostics.")
+    # print("Testing ME405 stuff in cotask.py and task_share.py\r\n"
+    #       "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
@@ -67,12 +76,12 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-    task1 = cotask.Task(task1_fun, name="Task_1", priority=1, period=400,
-                        profile=True, trace=False, shares=(share0, q0))
-    task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
-                        profile=True, trace=False, shares=(share0, q0))
-    cotask.task_list.append(task1)
-    cotask.task_list.append(task2)
+    motor_task1 = cotask.Task(task1_controller(), name="Task_1", priority=1, period=10,
+                              profile=False, trace=False)
+    # task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
+    #                     profile=True, trace=False, shares=(share0, q0))
+    cotask.task_list.append(motor_task1)
+    # cotask.task_list.append(task2)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
@@ -86,7 +95,7 @@ if __name__ == "__main__":
             break
 
     # Print a table of task data and a table of shared information data
-    print('\n' + str(cotask.task_list))
-    print(task_share.show_all())
-    print(task1.get_trace())
-    print('')
+    # print('\n' + str(cotask.task_list))
+    # print(task_share.show_all())
+    # print(task1.get_trace())
+    print('Done')
