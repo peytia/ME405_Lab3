@@ -25,7 +25,7 @@ class MotorTask:
     @details                    This is a class that implements
     """
 
-    def __init__(self,shares , motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
+    def __init__(self, shares, motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer, encoder_pinA, encoder_pinB, encoder_timer, Kp):
         """!
             @brief                      Constructs a controller object
             @details                    Upon instantiation, the controller object has a defined proportional gain and
