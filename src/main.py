@@ -52,7 +52,7 @@ def task2_fun(shares):
         yield 0
 
 
-def task1_controller():
+def task1_motor():
 
     Kp = float(input('Enter a Kp: '))
     motor1 = motor_task.MotorTask('A10', 'B4', 'B5', 3, 'C6', 'C7', 8, Kp)
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for
     # debugging and set trace to False when it's not needed
-    motor_task1 = cotask.Task(task1_controller, name="Task_1", priority=1, period=10,
+    motor_task1 = cotask.Task(task1_motor, name="Task_1", priority=1, period=10,
                               profile=False, trace=False)
     # # task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
     # #                     profile=True, trace=False, shares=(share0, q0))
