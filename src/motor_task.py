@@ -33,7 +33,7 @@ class MotorTask:
             @param  initial_Kp          The proportional gain to be used
             @param  initial_set_point   The initial setpoint to aim for
         """
-        self.setpoint_share = shares
+        self.setpoint_share, self.setpoint_share2, self.motor1position, self.motor2position = shares
         self.motor = motor_driver.MotorDriver(motor_enable_pin_str, motor_in1_pin, motor_in2_pin, motor_timer)
         self.encoder = encoder_reader.EncoderReader(encoder_pinA, encoder_pinB, encoder_timer)
         self.controller = motor_controller.MotorController(Kp, 0)
@@ -42,10 +42,19 @@ class MotorTask:
     def update(self):
 
         self.encoder_position = self.encoder.read()
-        self.controller.set_setpoint(self.setpoint_share.get())
+        # self.controller.set_setpoint(self.setpoint_share.get())
         self.motor_desiredduty = self.controller.run(self.encoder_position[0])
-        print(self.encoder_position[0],self.motor_desiredduty)
+        #print(self.encoder_position[0],self.motor_desiredduty)
         self.motor.set_duty_cycle(self.motor_desiredduty)
+
+    def get_position(self):
+        self.encoder_position = self.encoder.read()
+        return self.encoder_position
+
+    def set_setpoint(self, new_setpoint):
+        self.controller.set_setpoint(new_setpoint)
+        pass
+
 
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
