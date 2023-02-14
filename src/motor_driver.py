@@ -1,5 +1,3 @@
-import pyb
-
 """!
     @file                       motor_driver.py
     @brief                      This class implements a DC motor driver for an ME405 kit.
@@ -10,7 +8,7 @@ import pyb
     @author                     Harrison Hirsch
     @date                       January 31, 2023
 """
-
+import pyb
 
 class MotorDriver:
     """!

@@ -1,12 +1,15 @@
 """!
-    @file main.py
-        This file contains a program that runs some tasks, and some
-        inter-task communication variables. The tasks set up two separate
-        motors, run each of them through a different step response, and
-        outputs the results to a serial port.
+    @file           main.py
+    @brief
+    @details        This file contains a program that runs some motor tasks, and some
+                    inter-task communication variables. The tasks set up two separate
+                    motors, run each of them through a different step response, and
+                    outputs the results to a serial port.
 
     @author JR Ridgely
-    @date   February 14, 2023; JRR Created from the remains of previous example
+    @author Peyton Archibald
+    @author Harrison Hirsch
+    @date   February 14, 2023; Archibald and Hirsch Created from example by JRR
     @copyright (c) 2015-2021 by JR Ridgely and released under the GNU
         Public License, Version 2.
 """
