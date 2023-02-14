@@ -64,6 +64,7 @@ def task1_motor(shares):
     setpoint_share, setpoint_share2, motor1position, motor2position = shares
     yield 0
     while True:
+        motor1.set_setpoint(setpoint_share.get())
         motor1.update()
         motor1position.put(motor1.get_position()[0])
         yield 0
@@ -79,6 +80,7 @@ def task3_motor(shares):
     setpoint_share, setpoint_share2, motor1position, motor2position = shares
     yield 0
     while True:
+        motor2.set_setpoint(setpoint_share2.get())
         motor2.update()
         motor2position.put(motor2.get_position()[0])
         yield 0
@@ -93,6 +95,8 @@ def task2_step(shares):
     storedData = []  # Allocate memory for stored data
     # storedData = array.array('array', [])
     setpoint_share, setpoint_share2, motor1position, motor2position = shares
+    setpoint_share.put(24000)
+    setpoint_share2.put(16000)
     input('Press Enter to perform a step response')
     startTime = utime.ticks_ms()  # Begin start time counter
     tst_flg = True
@@ -155,11 +159,11 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for
     # debugging and set trace to False when it's not needed
-    motor_task1 = cotask.Task(task1_motor, name="Task_1", priority=1, period=10,
+    motor_task1 = cotask.Task(task1_motor, name="Task_1", priority=1, period=20,
                               profile=False, trace=False, shares=(setpoint_share, setpoint_share2, motor1_position_share, motor2_position_share))
     motor_task2 = cotask.Task(task3_motor, name="Task_3", priority=1, period=10,
                               profile=False, trace=False, shares=(setpoint_share, setpoint_share2, motor1_position_share, motor2_position_share))
-    stepresponse_task2 = cotask.Task(task2_step, name="Task_2", priority=2, period=50,
+    stepresponse_task2 = cotask.Task(task2_step, name="Task_2", priority=2, period=60,
                          profile=True, trace=False, shares=(setpoint_share, setpoint_share2, motor1_position_share, motor2_position_share))
     cotask.task_list.append(motor_task1)
     cotask.task_list.append(motor_task2)
