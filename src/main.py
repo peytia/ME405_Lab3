@@ -1,6 +1,6 @@
 """!
     @file           main.py
-    @brief
+    @brief          This file demonstrates task scheduling by running two motors
     @details        This file contains a program that runs some motor tasks, and some
                     inter-task communication variables. The tasks set up two separate
                     motors, run each of them through a different step response, and
