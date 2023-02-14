@@ -29,9 +29,9 @@ def main():
             while True:
                 if ser.inWaiting() > 0:     # Once data is read
                     data = ser.readline().strip(b'\r\n').split(b', ')   # Format incoming data
-                    data_list_x.append(float(data[0]))      # Append x values to x list
-                    data_list_y.append(float(data[1]))      # Append y values to y list
-                    if len(data_list_x) >= 600:         # Once data is finished (change this to length of step response)
+                    data_list_x.append(int(data[0]))      # Append x values to x list
+                    data_list_y.append(int(data[1]))      # Append y values to y list
+                    if data_list_x[len(data_list_x)-1] >= 6000:         # Once data is finished (change this to length of step response)
                         break                               # Break out of loop to plot
                 else:
                     time.sleep(0.01)
